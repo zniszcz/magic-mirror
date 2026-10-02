@@ -72,4 +72,4 @@ built with `dpkg-buildpackage -us -uc -b` (requires `debhelper`).
 
 ## License
 
-GPL-2.0-or-later, see [LICENSE](LICENSE).
+0BSD, see [LICENSE](LICENSE). It is compatible with the GPL of GNOME Shell.
