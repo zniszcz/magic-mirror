@@ -1,0 +1,19 @@
+# Magic Mirror
+
+> GNOME Shell extension that adds a switch to the top bar. One click toggles
+> between a saved multi-monitor layout and the laptop's built-in display only.
+
+Useful for people who often plug a laptop into external monitors (a dock, a
+desk setup, a monitor shared with another computer) and are tired of fixing
+the display layout in GNOME Settings every time. It targets GNOME Shell 46
+(e.g. Ubuntu 24.04) and ships as a Debian package.
+
+## Docs
+
+- [README](https://github.com/zniszcz/magic-mirror/blob/main/README.md): usage, install, uninstall, logs
+- [Latest release](https://github.com/zniszcz/magic-mirror/releases/latest): the .deb package
+
+## Optional
+
+- [Source code](https://github.com/zniszcz/magic-mirror/tree/main/src)
+- [License (0BSD)](https://github.com/zniszcz/magic-mirror/blob/main/LICENSE)
