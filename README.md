@@ -1,9 +1,23 @@
 # Magic Mirror
 
+![Coffee](https://img.shields.io/badge/coffee-under%201%20cup-6f4e37)
+![Tested](https://img.shields.io/badge/tested-poorly-orange)
+![Ogres](https://img.shields.io/badge/ogres-have%20layers-7cb342)
+![License](https://img.shields.io/badge/license-0BSD-blue)
+
 > Mirror, mirror on the wall — one screen or all?
+
+![The switch: built-in only, unknown layout, profile active](docs/states.png)
 
 A GNOME Shell extension that puts an Apple-like switch in the top bar. One click
 toggles between a saved multi-monitor layout and the built-in display only.
+
+Built with Claude in under one coffee. The coffee was still warm when it shipped.
+
+> [!WARNING]
+> Poorly tested. It works on exactly one laptop with two Dell monitors and a
+> second computer fighting over them. If you are brave enough to make it two
+> laptops — come on, give it a try, and open an issue when the ogre bites.
 
 ## Usage
 
@@ -12,13 +26,15 @@ toggles between a saved multi-monitor layout and the built-in display only.
    (later: **Update profile with current layout**).
 3. Left-click the switch to flip between the profile and the built-in display.
 
+![Right-click menu](docs/menu.png)
+
 The switch shows three positions:
 
 | Position | Meaning |
 | --- | --- |
-| Right, green | The saved profile is active. |
-| Left | Only the built-in display is on. |
-| Middle, dimmed | Some other layout, e.g. changed by hand in Settings. A click applies the profile. |
+| Right, green | *Happily ever after.* The saved profile is active. |
+| Left | *Back to the swamp.* Only the built-in display is on. |
+| Middle, dimmed | *By night one way, by day another.* Some other layout, e.g. changed by hand in Settings. A click applies the profile. |
 
 The whole switch is dimmed and inactive when there is nowhere to go, for example
 when the monitors from the profile are not connected. Hover over it to see why.
@@ -73,3 +89,4 @@ built with `dpkg-buildpackage -us -uc -b` (requires `debhelper`).
 ## License
 
 0BSD, see [LICENSE](LICENSE). It is compatible with the GPL of GNOME Shell.
+Take it, fork it, put it in your swamp.
