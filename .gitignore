@@ -1,0 +1,5 @@
+debian/.debhelper/
+debian/debhelper-build-stamp
+debian/files
+debian/*.substvars
+debian/gnome-shell-extension-magic-mirror/

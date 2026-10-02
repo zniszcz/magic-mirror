@@ -1,0 +1,9 @@
+{
+  "uuid": "magic-mirror@zniszczynski.pl",
+  "name": "Magic Mirror",
+  "description": "One-click switch between a saved display layout and the built-in display only.",
+  "shell-version": ["46"],
+  "url": "https://github.com/zniszcz/magic-mirror",
+  "version-name": "0.1.0",
+  "gettext-domain": "magic-mirror"
+}

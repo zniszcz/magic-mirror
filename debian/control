@@ -1,0 +1,18 @@
+Source: gnome-shell-extension-magic-mirror
+Section: gnome
+Priority: optional
+Maintainer: Adrian Zniszczyński <adrian@zniszczynski.pl>
+Build-Depends: debhelper-compat (= 13), gjs
+Standards-Version: 4.6.2
+Homepage: https://github.com/zniszcz/magic-mirror
+Vcs-Browser: https://github.com/zniszcz/magic-mirror
+Vcs-Git: https://github.com/zniszcz/magic-mirror.git
+Rules-Requires-Root: no
+
+Package: gnome-shell-extension-magic-mirror
+Architecture: all
+Depends: gnome-shell (>= 46~), gnome-shell (<< 47~), ${misc:Depends}
+Description: one-click switch between a saved display layout and the laptop screen
+ Magic Mirror adds an Apple-like switch to the GNOME Shell top bar. It toggles
+ between one saved multi-monitor layout and the built-in display only, using
+ the same Mutter API as GNOME Settings.
