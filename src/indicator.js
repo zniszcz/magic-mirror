@@ -14,7 +14,8 @@ import {
     Position, Target, applyConfig, buildConfig, createProxy, describe, fetchState,
     snapshotLayout,
 } from './displayConfig.js';
-import {loadProfile, saveProfile} from './profile.js';
+import {logger} from './logger.js';
+import {loadProfile, profilePath, saveProfile} from './profile.js';
 
 const KNOB_FRACTION = {
     [Position.OFF]: 0,
@@ -104,7 +105,11 @@ class MirrorIndicator extends PanelMenu.Button {
             if (this._destroyed)
                 return;
             this._proxy = proxy;
-            this._signalId = proxy.connectSignal('MonitorsChanged', () => this._refresh());
+            this._signalId = proxy.connectSignal('MonitorsChanged', () => {
+                logger.debug('Monitors changed');
+                this._refresh();
+            });
+            logger.debug('Connected to Mutter DisplayConfig');
             this._refresh();
         }).catch(e => this._logError(e));
 
@@ -142,10 +147,11 @@ class MirrorIndicator extends PanelMenu.Button {
             try {
                 profile = loadProfile();
             } catch (e) {
-                this._logError(e);
+                logger.warn(`Ignoring unreadable profile: ${e.message}`);
             }
             this._profile = profile;
             this._view = describe(state, profile);
+            logger.debug(`State: ${JSON.stringify(this._view)}`);
             this._sync();
         } catch (e) {
             this._logError(e);
@@ -161,8 +167,13 @@ class MirrorIndicator extends PanelMenu.Button {
             // Re-read the state: the serial must be fresh and cables may have moved.
             const state = await fetchState(this._proxy);
             const view = describe(state, this._profile);
-            if (view.target)
-                await applyConfig(this._proxy, state, buildConfig(state, this._profile, view.target));
+            if (!view.target)
+                return;
+
+            const config = buildConfig(state, this._profile, view.target);
+            logger.info(`Switching from ${view.position} to ${view.target}`);
+            logger.debug(`Applying ${JSON.stringify(config)}`);
+            await applyConfig(this._proxy, state, config);
         } catch (e) {
             this._reportError(_('Could not switch displays'), e);
         } finally {
@@ -175,7 +186,9 @@ class MirrorIndicator extends PanelMenu.Button {
             return;
 
         try {
-            saveProfile(snapshotLayout(await fetchState(this._proxy)));
+            const profile = snapshotLayout(await fetchState(this._proxy));
+            saveProfile(profile);
+            logger.info(`Saved profile with ${profile.logicalMonitors.length} display(s) to ${profilePath()}`);
             await this._refresh();
         } catch (e) {
             this._reportError(_('Could not save the profile'), e);
@@ -249,7 +262,7 @@ class MirrorIndicator extends PanelMenu.Button {
 
     _logError(error) {
         if (!error?.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-            console.error(`Magic Mirror: ${error}`);
+            logger.error(String(error));
     }
 
     _onDestroy() {

@@ -51,6 +51,16 @@ Both are safe to run again to upgrade. Afterwards restart GNOME Shell
 
 The saved profile is kept; delete `~/.config/magic-mirror` to remove it too.
 
+## Logs
+
+Messages go to the systemd journal through GNOME Shell:
+
+```sh
+journalctl --user -b -g 'Magic Mirror'
+```
+
+Debug details appear only when GNOME Shell runs with `G_MESSAGES_DEBUG=all`.
+
 ## Development
 
 ```sh
