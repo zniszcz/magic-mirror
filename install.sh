@@ -15,11 +15,12 @@ if [[ $SCOPE == system ]]; then
     fi
 else
     ./scripts/copy-files.sh "$USER_DIR"
-    if [[ $(gsettings get org.gnome.shell disable-user-extensions) == true ]]; then
-        echo "Warning: user extensions are disabled in GNOME, so this copy will not load." >&2
-        echo "Either run: gsettings set org.gnome.shell disable-user-extensions false" >&2
-        echo "or install system-wide: $0 --system" >&2
-    fi
+fi
+
+# This switch blocks every extension the user enabled, wherever it is installed.
+if [[ $(gsettings get org.gnome.shell disable-user-extensions) == true ]]; then
+    echo "Warning: user extensions are disabled in GNOME, so Magic Mirror will not load." >&2
+    echo "To allow them: gsettings set org.gnome.shell disable-user-extensions false" >&2
 fi
 
 # A freshly copied extension is unknown to the running shell, so enabling it
