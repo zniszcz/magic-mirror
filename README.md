@@ -51,6 +51,17 @@ when the monitors from the profile are not connected. Hover over it to see why.
 
 ## Install
 
+From a [release](https://github.com/zniszcz/magic-mirror/releases/latest), as a Debian package:
+
+```sh
+sudo apt install ./gnome-shell-extension-magic-mirror_*_all.deb
+gnome-extensions enable magic-mirror@zniszczynski.pl
+```
+
+Remove it with `sudo apt remove gnome-shell-extension-magic-mirror`.
+
+From source:
+
 ```sh
 ./install.sh            # current user
 ./install.sh --system   # all users, into /usr/share (uses sudo)
