@@ -10,7 +10,7 @@ the display layout in GNOME Settings every time. It targets GNOME Shell 46
 
 ## Docs
 
-- [README](https://github.com/zniszcz/magic-mirror/blob/main/README.md): usage, install, uninstall, logs
+- [README](https://github.com/zniszcz/magic-mirror/blob/main/README.md): usage, monitor hotplug detection, install, uninstall, logs
 - [Latest release](https://github.com/zniszcz/magic-mirror/releases/latest): the .deb package
 
 ## Optional

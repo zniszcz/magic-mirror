@@ -39,6 +39,21 @@ The switch shows three positions:
 The whole switch is dimmed and inactive when there is nowhere to go, for example
 when the monitors from the profile are not connected. Hover over it to see why.
 
+## Plugging monitors in
+
+The extension notices cables on its own, without polling:
+
+- It listens to the kernel's hotplug events for display ports. They cost
+  nothing until a cable actually moves.
+- Some drivers send no event at all. The NVIDIA X11 driver, for one, does not
+  even look at a port it has switched off. So hovering over a dimmed switch, or
+  clicking it, asks the display server to check its ports once (at most every
+  5 seconds on hover) and then re-reads the layout.
+- **Refresh displays** in the right-click menu does the same on demand.
+
+On X11 the check runs `xrandr --query`, which takes about 50 ms. Wayland needs
+no check, Mutter sees hotplugs there by itself.
+
 ## Design rules
 
 - **No force.** Layouts are applied through Mutter's `DisplayConfig` D-Bus API,
@@ -46,7 +61,9 @@ when the monitors from the profile are not connected. Hover over it to see why.
   extension simply reports a layout it does not recognise as "undefined".
 - **Monitors are matched by identity, not by port.** A profile stores vendor,
   product and serial number, so swapping cables between ports does not break it.
-- **No runtime dependencies** beyond GNOME Shell itself.
+- **Almost no runtime dependencies** beyond GNOME Shell itself: GUdev
+  (`gir1.2-gudev-1.0`) for hotplug events and, on X11, `xrandr`
+  (`x11-xserver-utils`) for the port check.
 - The profile is plain JSON in `~/.config/magic-mirror/profile.json`.
 
 ## Install
