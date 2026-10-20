@@ -3,6 +3,7 @@
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import St from 'gi://St';
 
 import {gettext as _} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -14,6 +15,7 @@ import {
     Position, Target, applyConfig, buildConfig, createProxy, describe, fetchState,
     snapshotLayout,
 } from './displayConfig.js';
+import {HotplugWatcher} from './hotplug.js';
 import {logger} from './logger.js';
 import {loadProfile, profilePath, saveProfile} from './profile.js';
 
@@ -25,6 +27,8 @@ const KNOB_FRACTION = {
 
 const ANIMATION_TIME = 150;
 const DISABLED_OPACITY = 110;
+// Hovering a dimmed switch re-probes the outputs, at most this often.
+const HOVER_PROBE_INTERVAL_US = 5 * GLib.USEC_PER_SEC;
 
 const MirrorSwitch = GObject.registerClass(
 class MirrorSwitch extends St.Widget {
@@ -86,19 +90,27 @@ class MirrorIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._statusItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this._saveItem = this.menu.addAction('', () => this._saveCurrentLayout());
+        this.menu.addAction(_('Refresh displays'), () => this._hotplug.reprobe());
 
         this._tooltip = new St.Label({style_class: 'dash-label', visible: false});
         Main.uiGroup.add_child(this._tooltip);
         // The shell may destroy uiGroup (and the tooltip with it) before us.
         this._tooltip.connect('destroy', () => (this._tooltip = null));
-        this.connect('notify::hover', () => this._syncTooltip());
+        this.connect('notify::hover', () => {
+            this._syncTooltip();
+            if (this.hover)
+                this._probeIfStuck();
+        });
         this.menu.connect('open-state-changed', () => this._syncTooltip());
 
         this._view = null;
         this._busy = false;
         this._destroyed = false;
         this._refreshTicket = 0;
+        this._lastHoverProbe = 0;
         this._sync();
+
+        this._hotplug = new HotplugWatcher(() => this._refresh());
 
         this._cancellable = new Gio.Cancellable();
         createProxy(this._cancellable).then(proxy => {
@@ -158,12 +170,31 @@ class MirrorIndicator extends PanelMenu.Button {
         }
     }
 
+    // The NVIDIA X driver ignores cables on outputs that are switched off and
+    // the kernel sends no uevent for them, so a dimmed switch may just be stale.
+    _probeIfStuck() {
+        if (!this._view?.hasProfile || this._view.profileAvailable)
+            return;
+        const now = GLib.get_monotonic_time();
+        if (now - this._lastHoverProbe < HOVER_PROBE_INTERVAL_US)
+            return;
+        this._lastHoverProbe = now;
+        logger.debug('Probing outputs on hover');
+        this._hotplug.reprobe();
+    }
+
     async _toggle() {
-        if (this._busy || !this._proxy || !this._view?.target)
+        if (this._busy || !this._proxy)
             return;
 
         this._busy = true;
         try {
+            // A dimmed switch may be stale, see _probeIfStuck().
+            if (!this._view?.target)
+                await this._hotplug.reprobe();
+            if (!this._view?.target)
+                return;
+
             // Re-read the state: the serial must be fresh and cables may have moved.
             const state = await fetchState(this._proxy);
             const view = describe(state, this._profile);
@@ -268,6 +299,7 @@ class MirrorIndicator extends PanelMenu.Button {
     _onDestroy() {
         this._destroyed = true;
         this._cancellable.cancel();
+        this._hotplug.destroy();
         if (this._proxy && this._signalId)
             this._proxy.disconnectSignal(this._signalId);
         this._proxy = null;
