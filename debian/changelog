@@ -1,3 +1,13 @@
+gnome-shell-extension-magic-mirror (0.2.0) unstable; urgency=medium
+
+  * Notice plugged-in monitors: listen to kernel hotplug events and, on X11,
+    probe the outputs once with xrandr.
+  * Probe the outputs when hovering or clicking a dimmed switch, for drivers
+    that send no hotplug events (NVIDIA X11).
+  * Add a Refresh displays menu item.
+
+ -- Adrian Zniszczyński <adrian@zniszczynski.pl>  Tue, 20 Oct 2026 17:47:08 +0200
+
 gnome-shell-extension-magic-mirror (0.1.0) unstable; urgency=medium
 
   * Initial release.
